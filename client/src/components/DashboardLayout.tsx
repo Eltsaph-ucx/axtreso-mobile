@@ -21,15 +21,23 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users } from "lucide-react";
+import { LayoutDashboard, LogOut, PanelLeft, Users, BarChart3, Settings } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
-const menuItems = [
-  { icon: LayoutDashboard, label: "Page 1", path: "/" },
-  { icon: Users, label: "Page 2", path: "/some-path" },
+const managerMenuItems = [
+  { icon: LayoutDashboard, label: "Dashboard", path: "/manager/dashboard" },
+  { icon: BarChart3, label: "Transactions", path: "/manager/transactions" },
+  { icon: Settings, label: "Paramètres", path: "/manager/settings" },
+];
+
+const adminMenuItems = [
+  { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
+  { icon: Users, label: "Salons", path: "/admin/salons" },
+  { icon: BarChart3, label: "Rapports", path: "/admin/reports" },
+  { icon: Settings, label: "Paramètres", path: "/admin/settings" },
 ];
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
@@ -37,11 +45,17 @@ const DEFAULT_WIDTH = 280;
 const MIN_WIDTH = 200;
 const MAX_WIDTH = 480;
 
+interface DashboardLayoutProps {
+  children: React.ReactNode;
+  title?: string;
+  description?: string;
+}
+
 export default function DashboardLayout({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+  title,
+  description,
+}: DashboardLayoutProps) {
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const saved = localStorage.getItem(SIDEBAR_WIDTH_KEY);
     return saved ? parseInt(saved, 10) : DEFAULT_WIDTH;
@@ -112,6 +126,7 @@ function DashboardLayoutContent({
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const menuItems = user?.role === 'admin' ? adminMenuItems : managerMenuItems;
   const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
 
@@ -159,7 +174,7 @@ function DashboardLayoutContent({
           className="border-r-0"
           disableTransition={isResizing}
         >
-          <SidebarHeader className="h-16 justify-center">
+            <SidebarHeader className="h-16 justify-center">
             <div className="flex items-center gap-3 px-2 transition-all w-full">
               <button
                 onClick={toggleSidebar}
@@ -170,8 +185,11 @@ function DashboardLayoutContent({
               </button>
               {!isCollapsed ? (
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="font-semibold tracking-tight truncate">
-                    Navigation
+                  <div className="w-6 h-6 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                    <span className="text-primary-foreground font-bold text-xs">A</span>
+                  </div>
+                  <span className="font-bold tracking-tight truncate text-primary">
+                    AXTRESO
                   </span>
                 </div>
               ) : null}
