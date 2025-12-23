@@ -10,6 +10,13 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import ManagerTransactions from "./pages/ManagerTransactions";
 import TransactionForm from "./pages/TransactionForm";
+import ManagerSettings from "./pages/ManagerSettings";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminSalons from "./pages/AdminSalons";
+import AdminSalonDetails from "./pages/AdminSalonDetails";
+import AdminReports from "./pages/AdminReports";
+import ReportPreview from "./pages/ReportPreview";
+import ReportDownload from "./pages/ReportDownload";
 
 function Router() {
   return (
@@ -22,12 +29,15 @@ function Router() {
       <Route path={"/manager/transactions"} component={ManagerTransactions} />
       <Route path={"/manager/transactions/add"} component={TransactionForm} />
       <Route path={"/manager/transactions/:id/edit"} component={TransactionForm} />
-      <Route path={"/manager/settings"} component={() => <div>Settings - Coming Soon</div>} />
+      <Route path={"/manager/settings"} component={ManagerSettings} />
       
-      {/* Admin Dashboard Routes - To be implemented */}
-      <Route path={"/admin/dashboard"} component={() => <div>Admin Dashboard - Coming Soon</div>} />
-      <Route path={"/admin/salons"} component={() => <div>Salons Management - Coming Soon</div>} />
-      <Route path={"/admin/reports"} component={() => <div>Reports - Coming Soon</div>} />
+      {/* Admin Dashboard Routes */}
+      <Route path={"/admin/dashboard"} component={AdminDashboard} />
+      <Route path={"/admin/salons"} component={AdminSalons} />
+      <Route path={"/admin/salons/:id"} component={AdminSalonDetails} />
+      <Route path={"/admin/reports"} component={AdminReports} />
+      <Route path={"/admin/reports/:id"} component={ReportPreview} />
+      <Route path={"/admin/reports/:id/download"} component={ReportDownload} />
       <Route path={"/admin/settings"} component={() => <div>Admin Settings - Coming Soon</div>} />
       
       <Route path={"/404"} component={NotFound} />
