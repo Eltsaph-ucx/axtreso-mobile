@@ -7,6 +7,7 @@ import ManagerLogin from "@/pages/ManagerLogin";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import ManagerDashboard from "./pages/ManagerDashboard";
 import ManagerTransactions from "./pages/ManagerTransactions";
 import TransactionForm from "./pages/TransactionForm";
@@ -25,11 +26,31 @@ function Router() {
       <Route path={"/manager/register"} component={ManagerRegister} />
       <Route path={"/manager/login"} component={ManagerLogin} />
       {/* Manager Dashboard Routes */}
-      <Route path={"/manager/dashboard"} component={ManagerDashboard} />
-      <Route path={"/manager/transactions"} component={ManagerTransactions} />
-      <Route path={"/manager/transactions/add"} component={TransactionForm} />
-      <Route path={"/manager/transactions/:id/edit"} component={TransactionForm} />
-      <Route path={"/manager/settings"} component={ManagerSettings} />
+      <Route path={"/manager/dashboard"}>
+        <ProtectedRoute>
+          <ManagerDashboard />
+        </ProtectedRoute>
+      </Route>
+      <Route path={"/manager/transactions"}>
+        <ProtectedRoute>
+          <ManagerTransactions />
+        </ProtectedRoute>
+      </Route>
+      <Route path={"/manager/transactions/add"}>
+        <ProtectedRoute>
+          <TransactionForm />
+        </ProtectedRoute>
+      </Route>
+      <Route path={"/manager/transactions/:id/edit"}>
+        <ProtectedRoute>
+          <TransactionForm />
+        </ProtectedRoute>
+      </Route>
+      <Route path={"/manager/settings"}>
+        <ProtectedRoute>
+          <ManagerSettings />
+        </ProtectedRoute>
+      </Route>
       
       {/* Admin Dashboard Routes */}
       <Route path={"/admin/dashboard"} component={AdminDashboard} />

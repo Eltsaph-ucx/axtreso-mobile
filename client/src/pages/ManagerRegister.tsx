@@ -2,23 +2,26 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { trpc } from "@/lib/trpc";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
 export default function ManagerRegister() {
   const [, setLocation] = useLocation();
   const [formData, setFormData] = useState({
+    salonName: "",
     email: "",
     password: "",
     confirmPassword: "",
-    salonName: "",
-    city: "Libreville" as "Libreville" | "Brazzaville",
-    phone: "",
+    city: "Libreville",
   });
-
-  const registerMutation = trpc.auth.registerManager.useMutation();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,15 +29,14 @@ export default function ManagerRegister() {
   };
 
   const handleCityChange = (value: string) => {
-    setFormData(prev => ({ ...prev, city: value as "Libreville" | "Brazzaville" }));
+    setFormData(prev => ({ ...prev, city: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validation
-    if (!formData.email || !formData.password || !formData.salonName) {
-      toast.error("Veuillez remplir tous les champs obligatoires");
+    if (!formData.salonName || !formData.email || !formData.password || !formData.city) {
+      toast.error("Veuillez remplir tous les champs");
       return;
     }
 
@@ -48,19 +50,35 @@ export default function ManagerRegister() {
       return;
     }
 
+    setIsLoading(true);
     try {
-      await registerMutation.mutateAsync({
-        email: formData.email,
-        password: formData.password,
-        salonName: formData.salonName,
-        city: formData.city,
-        phone: formData.phone || undefined,
+      const response = await fetch("/api/auth/manager/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          salonName: formData.salonName,
+          email: formData.email,
+          password: formData.password,
+          city: formData.city,
+        }),
+        credentials: "include",
       });
 
-      toast.success("Compte créé avec succès! Redirection...");
-      setTimeout(() => setLocation("/manager/login"), 1500);
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data.error || "Une erreur s'est produite");
+        return;
+      }
+
+      toast.success(data.message || "Inscription réussie! Redirection vers la connexion...");
+      setTimeout(() => setLocation("/manager/login"), 2000);
     } catch (error: any) {
-      toast.error(error.message || "Erreur lors de l'inscription");
+      toast.error(error.message || "Une erreur s'est produite");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -82,62 +100,32 @@ export default function ManagerRegister() {
             </div>
           </div>
           <h1 className="text-3xl font-bold text-primary mb-2">AXTRESO</h1>
-          <p className="text-muted-foreground">Créer un compte gérant</p>
+          <p className="text-muted-foreground">Inscription Gérant</p>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="bg-card border border-border rounded-lg p-8 space-y-6">
+        <form onSubmit={handleSubmit} className="bg-card border border-border rounded-lg p-8 space-y-4">
           {/* Salon Name */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-foreground">
-              Nom du Salon *
+              Nom du Salon
             </label>
             <Input
               type="text"
               name="salonName"
               value={formData.salonName}
               onChange={handleChange}
-              placeholder="Ex: Salon de Coiffure Élégance"
+              placeholder="Mon Salon de Coiffure"
               className="w-full"
               required
-            />
-          </div>
-
-          {/* City */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-foreground">
-              Ville *
-            </label>
-            <Select value={formData.city} onValueChange={handleCityChange}>
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Libreville">Libreville</SelectItem>
-                <SelectItem value="Brazzaville">Brazzaville</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Phone */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-foreground">
-              Téléphone
-            </label>
-            <Input
-              type="tel"
-              name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              placeholder="Ex: +241 06 12 34 56"
-              className="w-full"
+              disabled={isLoading}
             />
           </div>
 
           {/* Email */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-foreground">
-              Email *
+              Email
             </label>
             <Input
               type="email"
@@ -147,13 +135,30 @@ export default function ManagerRegister() {
               placeholder="votre@email.com"
               className="w-full"
               required
+              disabled={isLoading}
             />
+          </div>
+
+          {/* City */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-foreground">
+              Ville
+            </label>
+            <Select value={formData.city} onValueChange={handleCityChange} disabled={isLoading}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Sélectionnez votre ville" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Libreville">Libreville</SelectItem>
+                <SelectItem value="Brazzaville">Brazzaville</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Password */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-foreground">
-              Mot de Passe *
+              Mot de Passe
             </label>
             <Input
               type="password"
@@ -163,36 +168,35 @@ export default function ManagerRegister() {
               placeholder="Au moins 8 caractères"
               className="w-full"
               required
+              disabled={isLoading}
             />
-            <p className="text-xs text-muted-foreground">
-              Minimum 8 caractères, incluant majuscules, minuscules et chiffres
-            </p>
           </div>
 
           {/* Confirm Password */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-foreground">
-              Confirmer le Mot de Passe *
+              Confirmer le Mot de Passe
             </label>
             <Input
               type="password"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              placeholder="Confirmer votre mot de passe"
+              placeholder="Confirmez votre mot de passe"
               className="w-full"
               required
+              disabled={isLoading}
             />
           </div>
 
           {/* Submit Button */}
           <Button
             type="submit"
-            disabled={registerMutation.isPending}
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+            disabled={isLoading}
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground mt-6"
             size="lg"
           >
-            {registerMutation.isPending ? (
+            {isLoading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Création en cours...
@@ -209,17 +213,18 @@ export default function ManagerRegister() {
               type="button"
               onClick={() => setLocation("/manager/login")}
               className="text-secondary hover:text-secondary/80 font-medium"
+              disabled={isLoading}
             >
-              Se connecter
+              Se Connecter
             </button>
           </div>
         </form>
 
         {/* Info Box */}
         <div className="mt-6 bg-secondary/10 border border-secondary/20 rounded-lg p-4 text-sm text-foreground">
-          <p className="font-medium mb-2">✓ Données sécurisées</p>
+          <p className="font-medium mb-2">🔒 Sécurité</p>
           <p className="text-muted-foreground">
-            Vos données sont chiffrées et synchronisées automatiquement en temps réel.
+            Vos données sont chiffrées et sécurisées. Nous ne partageons jamais vos informations.
           </p>
         </div>
       </div>

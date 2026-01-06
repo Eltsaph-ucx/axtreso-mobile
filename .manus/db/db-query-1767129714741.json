@@ -1,0 +1,22 @@
+{
+  "query": "SELECT * FROM users WHERE email = 'test@salonbeaute.cg';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user Db6yqvH18XWx46M.root --database aWgoXNprw2ytUJNe7bm9cT --execute SELECT * FROM users WHERE email = 'test@salonbeaute.cg';",
+  "rows": [
+    {
+      "id": "210008",
+      "openId": "NULL",
+      "name": "Salon Beauté Brazzaville",
+      "email": "test@salonbeaute.cg",
+      "loginMethod": "email",
+      "role": "manager",
+      "createdAt": "2025-12-26 18:46:39",
+      "updatedAt": "2025-12-30 21:17:47",
+      "lastSignedIn": "2025-12-30 21:17:48",
+      "passwordHash": "$2b$10$TVHy.X8/yoHMbJ5qNbkBZe7TyhKgFLGliwHgm07V.RbosLCNCjOTG"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\topenId\tname\temail\tloginMethod\trole\tcreatedAt\tupdatedAt\tlastSignedIn\tpasswordHash\n210008\tNULL\tSalon Beauté Brazzaville\ttest@salonbeaute.cg\temail\tmanager\t2025-12-26 18:46:39\t2025-12-30 21:17:47\t2025-12-30 21:17:48\t$2b$10$TVHy.X8/yoHMbJ5qNbkBZe7TyhKgFLGliwHgm07V.RbosLCNCjOTG\n",
+  "stderr": "",
+  "execution_time_ms": 214
+}

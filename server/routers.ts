@@ -2,6 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
+import { sdk } from "./_core/sdk";
 import { z } from "zod";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
@@ -77,7 +78,7 @@ const authRouter = router({
       email: z.string().email(),
       password: z.string(),
     }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const user = await db.getUserByEmail(input.email);
       if (!user || !user.passwordHash) {
         throw new TRPCError({
@@ -99,6 +100,16 @@ const authRouter = router({
         email: user.email,
         lastSignedIn: new Date(),
       });
+
+      // Create session token using openId (use email as fallback if openId not set)
+      const openId = user.openId || `email_${user.email || "unknown"}`;
+      const sessionToken = await sdk.createSessionToken(openId, {
+        name: user.name || user.email || "Manager",
+      });
+
+      // Set session cookie
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.cookie(COOKIE_NAME, sessionToken, cookieOptions);
 
       return { success: true, userId: user.id };
     }),

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    form {
+      border: 1px solid #ccc;
+      padding: 20px;
+      border-radius: 5px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #3E2723;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #2c1810;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+      display: none;
+    }
+    .success {
+      background-color: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <h1>Test Login - AXTRESO</h1>
+  <form id="loginForm">
+    <input type="email" name="email" placeholder="Email" value="test@salonbeaute.cg" required>
+    <input type="password" name="password" placeholder="Password" value="TestPassword123" required>
+    <button type="submit">Se Connecter</button>
+  </form>
+  <div id="result"></div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const resultDiv = document.getElementById('result');
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = 'Connexion en cours...';
+      resultDiv.className = '';
+
+      try {
+        const response = await fetch('/api/auth/manager/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: document.querySelector('input[name="email"]').value,
+            password: document.querySelector('input[name="password"]').value,
+          }),
+          credentials: 'include',
+        });
+
+        const data = await response.json();
+        console.log('Response:', response.status, data);
+
+        if (response.ok) {
+          resultDiv.innerHTML = `<strong>Succès!</strong><br>User ID: ${data.userId}<br><a href="/manager/dashboard">Aller au dashboard</a>`;
+          resultDiv.className = 'success';
+        } else {
+          resultDiv.innerHTML = `<strong>Erreur:</strong> ${data.error || 'Identifiants invalides'}`;
+          resultDiv.className = 'error';
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<strong>Erreur:</strong> ${error.message}`;
+        resultDiv.className = 'error';
+      }
+    });
+  </script>
+</body>
+</html>

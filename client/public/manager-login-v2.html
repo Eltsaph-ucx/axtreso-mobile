@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AXTRESO - Connexion Gérant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, rgba(62, 39, 35, 0.1) 0%, rgba(255, 255, 255, 1) 50%, rgba(212, 175, 55, 0.1) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #3E2723;
+            text-decoration: none;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            opacity: 0.8;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3E2723 0%, #D4AF37 100%);
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin: 0 auto 1rem;
+        }
+
+        h1 {
+            font-size: 1.875rem;
+            color: #3E2723;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 0.875rem;
+        }
+
+        .form-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3E2723;
+            box-shadow: 0 0 0 3px rgba(62, 39, 35, 0.1);
+        }
+
+        .submit-button {
+            width: 100%;
+            padding: 0.625rem;
+            background: #3E2723;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            background: #2c1810;
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .register-link {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .register-link a {
+            color: #D4AF37;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .info-box {
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            font-size: 0.875rem;
+            color: #333;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .error-message {
+            color: #f44336;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            display: none;
+            padding: 0.75rem;
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.2);
+            border-radius: 0.375rem;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #999;
+            font-size: 0.875rem;
+        }
+
+        .loading.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <a href="/" class="back-button">← Retour</a>
+            <div class="logo">A</div>
+            <h1>AXTRESO</h1>
+            <p class="subtitle">Connexion Gérant</p>
+        </div>
+
+        <!-- Form -->
+        <div class="form-card">
+            <!-- Error Message -->
+            <div class="error-message" id="errorMessage"></div>
+
+            <!-- Loading -->
+            <div class="loading" id="loading">Connexion en cours...</div>
+
+            <!-- Form -->
+            <div id="formContainer">
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="votre@email.com"
+                        required
+                        autofocus
+                    />
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Mot de Passe</label>
+                    <input
+                        type="password"
+                        id="password"
+                        placeholder="Votre mot de passe"
+                        required
+                    />
+                </div>
+
+                <!-- Submit Button -->
+                <button type="button" class="submit-button" id="submitButton" onclick="handleSubmit()">
+                    Se Connecter
+                </button>
+            </div>
+
+            <!-- Register Link -->
+            <div class="register-link" style="margin-top: 1rem;">
+                Vous n'avez pas de compte? <a href="/manager/register">S'inscrire</a>
+            </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <strong>💡 Besoin d'aide?</strong>
+            Si vous avez oublié votre mot de passe, contactez votre administrateur.
+        </div>
+    </div>
+
+    <script>
+        async function handleSubmit() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const loading = document.getElementById('loading');
+            const submitButton = document.getElementById('submitButton');
+            const formContainer = document.getElementById('formContainer');
+
+            // Validate inputs
+            if (!email || !password) {
+                errorMessage.textContent = 'Veuillez remplir tous les champs';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            // Show loading state
+            loading.classList.add('show');
+            submitButton.disabled = true;
+            errorMessage.classList.remove('show');
+
+            try {
+                // Submit form
+                const formData = new FormData();
+                formData.append('email', email);
+                formData.append('password', password);
+
+                const response = await fetch('/api/auth/manager/login-form', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                // Check if redirected
+                if (response.redirected) {
+                    window.location.href = response.url;
+                    return;
+                }
+
+                // If not redirected, check for error
+                if (!response.ok) {
+                    const data = await response.json();
+                    errorMessage.textContent = data.error || 'Erreur lors de la connexion';
+                    errorMessage.classList.add('show');
+                } else {
+                    const data = await response.json();
+                    if (data.success) {
+                        // Redirect manually
+                        window.location.href = '/manager/dashboard';
+                    } else {
+                        errorMessage.textContent = data.error || 'Erreur lors de la connexion';
+                        errorMessage.classList.add('show');
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessage.textContent = 'Erreur lors de la connexion';
+                errorMessage.classList.add('show');
+            } finally {
+                loading.classList.remove('show');
+                submitButton.disabled = false;
+            }
+        }
+
+        // Allow Enter key to submit
+        document.getElementById('password').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSubmit();
+            }
+        });
+    </script>
+</body>
+</html>
