@@ -3,23 +3,5 @@
   "devCommand": "pnpm dev",
   "installCommand": "pnpm install",
   "framework": null,
-  "outputDirectory": "dist",
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "functions": {
-    "server/_core/index.ts": {
-      "runtime": "nodejs20.x"
-    }
-  },
-  "routes": [
-    {
-      "src": "/api/.*",
-      "dest": "dist/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "dist/index.html"
-    }
-  ]
+  "outputDirectory": "dist"
 }
